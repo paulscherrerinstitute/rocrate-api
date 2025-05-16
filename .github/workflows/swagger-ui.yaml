@@ -26,9 +26,9 @@ jobs:
           # Delete the docs directory
           rm -fr docs
           # Download the release
-          curl -sL -o $RELEASE_TAG https://api.github.com/repos/swagger-api/swagger-ui/tarball/$RELEASE_TAG
+          curl -sL -o $RELEASE_TAG "https://github.com/swagger-api/swagger-ui/archive/refs/tags/${RELEASE_TAG}.tar.gz"
           # Extract the dist directory
-          tar -xzf $RELEASE_TAG --strip-components=1 $(tar -tzf $RELEASE_TAG | head -1 | cut -f1 -d"/")/dist
+          tar -xf $RELEASE_TAG --strip-components=1 $(tar -tf $RELEASE_TAG | head -1 | cut -f1 -d"/")/dist
           mv dist docs
           rm $RELEASE_TAG
           # Fix references in dist/swagger-initializer and index.html
