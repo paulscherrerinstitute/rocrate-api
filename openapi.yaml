@@ -18,19 +18,13 @@ paths:
       tags:
         - ro-crate
       summary: Import a RO-Crate
-      parameters:
-        - in: header
-          name: async
-          schema: 
-            type: boolean
-          required: false
-          description: "Starts an async import. Only works with Accept: text/plain. This is a token to get the result."
       description: |
         Import the metadata contained in the
         [RO-Crate Metadata File Descriptor](https://www.researchobject.org/ro-crate/specification/1.1/root-data-entity.html#ro-crate-metadata-file-descriptor)
         to the system.
 
         When the 'Content-Type' header is 'application/zip', the data is also imported.
+        When the file is large enough, the server may reutrn an AsyncJob at its own discretion.
       requestBody:
         description: |
           The RO-Crate to import.
@@ -106,13 +100,6 @@ paths:
         either in the produced zip file or as remote URLs referenced in the RO-Crate metadata descriptor.
 
         When the 'Content-Type' header is 'multipart/form-data' a map of system-specific options can be supplied in addition to the RO-Crate.
-      parameters:
-        - in: header
-          name: async
-          schema: 
-            type: boolean
-          required: false
-          description: "Starts an async import. Only works with Accept: text/plain. This is a token to get the result."
       requestBody:
         description: List of Digital Object Identifiers [DOIs](https://www.doi.org) or system specific identifiers
         content:
@@ -171,13 +158,6 @@ paths:
       tags:
         - ro-crate
       summary: Validate a RO-Crate
-      parameters:
-        - in: header
-          name: async
-          schema: 
-            type: boolean
-          required: false
-          description: "Starts an async import. Only works with Accept: text/plain. This is a token to get the result."
       description: |
         Checks if the system can import a given RO-Crate.
 
@@ -309,11 +289,6 @@ paths:
               schema:
                 type: string
                 format: binary
-            text/plain:
-              schema:
-                type: string
-                description: Status of job
-                enum: ["SCHEDULED", "RUNNING", "FAILED", "READY"]
         400:
           description: Problems with arguments
         401:
@@ -605,6 +580,28 @@ components:
         - nodeId
         - property
         - message
+    AsyncResult: 
+      type: object
+      properties: 
+        status: 
+          type: string
+          enum: ["SCHEDULED", "RUNNING", "FAILED", "READY"]
+        if:
+          properties:
+            status:
+              const: "FAILED"
+        then:
+          properties:
+            errors:
+              type: array
+              items:
+                type: string
+        result: 
+          type: object
+          oneOf:
+            - $ref: "#/components/schemas/ImportResponse"
+            - $ref: "#/components/schemas/ValidationReport"
+
 
   examples:
     validCrateResponse:
