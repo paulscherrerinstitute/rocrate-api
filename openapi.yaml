@@ -24,7 +24,7 @@ paths:
         to the system.
 
         When the 'Content-Type' header is 'application/zip', the data is also imported.
-        The import is asynchronous, its status can be checked via /api/v1/ro-crate/import.
+        The import may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
       requestBody:
         description: |
           The RO-Crate to import.
@@ -106,7 +106,7 @@ paths:
         either in the produced zip file or as remote URLs referenced in the RO-Crate metadata descriptor.
 
         When the 'Content-Type' header is 'multipart/form-data' a map of system-specific options can be supplied in addition to the RO-Crate.
-        The import is asynchronous, its status can be checked via /api/v1/ro-crate/import.
+        The import may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
 
       requestBody:
         description: List of Digital Object Identifiers [DOIs](https://www.doi.org) or system specific identifiers
@@ -178,6 +178,9 @@ paths:
         Depending on the flexibility of the system, the validation process can differ, the metadata can be checked against:
         - the schema bundled in the RO-Crate
         - a fixed list of schemas that the system can interpret
+        
+        The validation may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
+
 
         When the 'Content-Type' header is 'application/zip', the presence of the data in the zip archive is also checked.
       requestBody:
