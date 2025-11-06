@@ -158,10 +158,6 @@ paths:
               schema:
                 type: string
                 format: binary
-            text/plain:
-              schema:
-                type: string
-                example: 655719dd-e400-43bb-9952-e25738cfffe7
         "202":
           description: Contains information for polling /api/v1/ro-crate/result 
           content:
