@@ -107,6 +107,16 @@ paths:
 
         When the 'Content-Type' header is 'multipart/form-data' a map of system-specific options can be supplied in addition to the RO-Crate.
         The import may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
+      parameters:
+        - in: header
+          name: Export
+          schema: 
+            type: string
+            enum:
+            - "application/ld+json"
+            - "application/zip"
+          required: true
+          description: MIME type for the result
 
       requestBody:
         description: List of Digital Object Identifiers [DOIs](https://www.doi.org) or system specific identifiers
