@@ -32,7 +32,6 @@ paths:
           Depending on the 'Content-Type' header, the payload can either be:
           - a [RO-Crate Metadata File Descriptor](https://www.researchobject.org/ro-crate/specification/1.1/root-data-entity.html#ro-crate-metadata-file-descriptor) for 'application/ld+json'
           - a zipped RO-Crate for 'application/zip'
-          - a multipart payload with one of the two precedent items with 'name=ro-crate' and a map of system specific options as 'name=options'
         content:
           application/ld+json:
             schema:
@@ -41,22 +40,6 @@ paths:
             schema:
               type: string
               format: binary
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                ro-crate:
-                  oneOf:
-                    - $ref: "#/components/schemas/RoCrate"
-                    - type: string
-                      format: binary
-                options:
-                  type: object
-            encoding:
-              ro-crate:
-                contentType: application/ld+json, application/zip
-              options:
-                contentType: application/json
           text/plain:
             schema:
               type: string
@@ -71,7 +54,7 @@ paths:
                 Valid:
                   $ref: "#/components/examples/importResponseExample"
         "202":
-          description: Contains information for polling /api/v1/ro-crate/result 
+          description: Contains information for polling /api/v1/ro-crate/result
           content:
             application/json:
               schema:
@@ -105,16 +88,15 @@ paths:
         When the 'Accept' header is 'application/zip', the data is also exported
         either in the produced zip file or as remote URLs referenced in the RO-Crate metadata descriptor.
 
-        When the 'Content-Type' header is 'multipart/form-data' a map of system-specific options can be supplied in addition to the RO-Crate.
         The import may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
       parameters:
         - in: header
           name: Export
-          schema: 
+          schema:
             type: string
             enum:
-            - "application/ld+json"
-            - "application/zip"
+              - "application/ld+json"
+              - "application/zip"
           required: true
           description: MIME type for the result
 
@@ -131,22 +113,6 @@ paths:
                 $ref: "#/components/examples/doiList"
               System specific identifiers:
                 $ref: "#/components/examples/idList"
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                ro-crate:
-                  oneOf:
-                    - $ref: "#/components/schemas/RoCrate"
-                    - type: string
-                      format: binary
-                options:
-                  type: object
-            encoding:
-              ro-crate:
-                contentType: application/ld+json, application/zip
-              options:
-                contentType: application/json
       responses:
         "200":
           description: OK
@@ -159,7 +125,7 @@ paths:
                 type: string
                 format: binary
         "202":
-          description: Contains information for polling /api/v1/ro-crate/result 
+          description: Contains information for polling /api/v1/ro-crate/result
           content:
             application/json:
               schema:
@@ -184,7 +150,7 @@ paths:
         Depending on the flexibility of the system, the validation process can differ, the metadata can be checked against:
         - the schema bundled in the RO-Crate
         - a fixed list of schemas that the system can interpret
-        
+
         The validation may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
 
 
@@ -196,7 +162,6 @@ paths:
           Depending on the 'Content-Type' header, the payload can either be:
           - a [RO-Crate Metadata File Descriptor](https://www.researchobject.org/ro-crate/specification/1.1/root-data-entity.html#ro-crate-metadata-file-descriptor) for 'application/ld+json'
           - a zipped RO-Crate for 'application/zip'
-          - a multipart payload with one of the two precedent items with 'name=ro-crate' and a map of system specific options as 'name=options'
         content:
           application/ld+json:
             schema:
@@ -205,22 +170,6 @@ paths:
             schema:
               type: string
               format: binary
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                ro-crate:
-                  oneOf:
-                    - $ref: "#/components/schemas/RoCrate"
-                    - type: string
-                      format: binary
-                options:
-                  type: object
-            encoding:
-              ro-crate:
-                contentType: application/ld+json, application/zip
-              options:
-                contentType: application/json
       responses:
         "200":
           description: Result of the validation process
@@ -237,7 +186,7 @@ paths:
                   $ref: "#/components/examples/emptyCrateExample"
 
         "202":
-          description: Contains information for polling /api/v1/ro-crate/result 
+          description: Contains information for polling /api/v1/ro-crate/result
           content:
             application/json:
               schema:
@@ -277,7 +226,7 @@ paths:
                         $ref: "#/components/schemas/PropertyError"
                   required:
                     - errors
-            text/plain: 
+            text/plain:
               schema:
                 type: string
                 example: 655719dd-e400-43bb-9952-e25738cfffe7
@@ -288,20 +237,20 @@ paths:
       summary: Validates a Publication object. The Publication should be flattened before including it in a RO-Crate. When the file is large enough, the server may reutrn an AsyncJob at its own discretion.
   /api/v1/ro-crate/result:
     get:
-      tags: 
+      tags:
         - ro-crate
       description: |
-        Getting the results of an async call. 
+        Getting the results of an async call.
       parameters:
         - in: header
           name: jobid
-          schema: 
+          schema:
             type: string
           required: true
           description: Job ID from an async call, i.e. validate, export or import
         - in: header
           name: api-key
-          schema: 
+          schema:
             type: string
           required: true
           description: API key identifying the user
@@ -309,7 +258,7 @@ paths:
         200:
           description: Content is ready for this job
           content:
-            application/json: 
+            application/json:
               schema:
                 type: object
             application/ld+json:
@@ -326,8 +275,7 @@ paths:
         "403":
           description: Service is not accesible to user
         "500":
-          description: Interal Server Error      
-
+          description: Interal Server Error
 
 # https://github.com/json-ld/json-ld.org/blob/main/schemas/jsonld-schema.json
 components:
@@ -616,16 +564,15 @@ components:
     AsyncJob:
       type: object
       properties:
-        jobId: 
+        jobId:
           type: string
       required:
         - jobId
 
-
-    AsyncResult: 
+    AsyncResult:
       type: object
-      properties: 
-        status: 
+      properties:
+        status:
           type: string
           enum: ["SCHEDULED", "RUNNING", "FAILED", "READY"]
         if:
@@ -638,12 +585,11 @@ components:
               type: array
               items:
                 type: string
-        result: 
+        result:
           type: object
           oneOf:
             - $ref: "#/components/schemas/ImportResponse"
             - $ref: "#/components/schemas/ValidationReport"
-
 
   examples:
     validCrateResponse:
