@@ -54,7 +54,7 @@ paths:
                 Valid:
                   $ref: "#/components/examples/importResponseExample"
         "202":
-          description: Contains information for polling /api/v1/ro-crate/result
+          description: Contains information for polling /api/v1/ro-crate/status
           content:
             application/json:
               schema:
@@ -98,7 +98,7 @@ paths:
               - "application/ld+json"
               - "application/zip"
           required: true
-          description: MIME type for the result
+          description: MIME type for the export
 
       requestBody:
         description: List of Digital Object Identifiers [DOIs](https://www.doi.org) or system specific identifiers
@@ -125,7 +125,7 @@ paths:
                 type: string
                 format: binary
         "202":
-          description: Contains information for polling /api/v1/ro-crate/result
+          description: Contains information for polling /api/v1/ro-crate/status
           content:
             application/json:
               schema:
@@ -186,7 +186,7 @@ paths:
                   $ref: "#/components/examples/emptyCrateExample"
 
         "202":
-          description: Contains information for polling /api/v1/ro-crate/result
+          description: Contains information for polling /api/v1/ro-crate/status
           content:
             application/json:
               schema:
@@ -235,12 +235,12 @@ paths:
         "501":
           description: Not implemented
       summary: Validates a Publication object. The Publication should be flattened before including it in a RO-Crate. When the file is large enough, the server may reutrn an AsyncJob at its own discretion.
-  /api/v1/ro-crate/result:
+  /api/v1/ro-crate/status:
     get:
       tags:
         - ro-crate
       description: |
-        Getting the results of an async call.
+        Getting the status of an async call.
       parameters:
         - in: header
           name: jobid
