@@ -570,26 +570,22 @@ components:
         - jobId
 
     AsyncResult:
-      type: object
       properties:
         status:
+          enum:
+          - SCHEDULED
+          - RUNNING
+          - FAILED
+          - READY
           type: string
-          enum: ["SCHEDULED", "RUNNING", "FAILED", "READY"]
-        if:
-          properties:
-            status:
-              const: "FAILED"
-        then:
-          properties:
-            errors:
-              type: array
-              items:
-                type: string
-        result:
-          type: object
-          oneOf:
-            - $ref: "#/components/schemas/ImportResponse"
-            - $ref: "#/components/schemas/ValidationReport"
+        errors: 
+          type: array
+          items:
+            type: string
+        validationResult:
+          $ref: '#/components/schemas/ValidationReport'
+        importResult: 
+          $ref: '#/components/schemas/ImportResponse'
 
   examples:
     validCrateResponse:
