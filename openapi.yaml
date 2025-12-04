@@ -576,7 +576,7 @@ components:
           - SCHEDULED
           - RUNNING
           - FAILED
-          - READY
+          - COMPLETED
           type: string
         errors: 
           type: array
