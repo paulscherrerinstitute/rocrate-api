@@ -1,0 +1,151 @@
+{
+  "@context": {
+    "Organization": "https://schema.org/Organization",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "CreativeWork": "https://schema.org/CreativeWork",
+    "about": "https://schema.org/about",
+    "description": "https://schema.org/description",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "dateCreated": "https://schema.org/dateCreated",
+    "rangeIncludes": "https://schema.org/rangeIncludes",
+    "creativeWorkStatus": "https://schema.org/creativeWorkStatus",
+    "identifier": "https://schema.org/identifier",
+    "creator": "https://schema.org/creator",
+    "hasPart": "https://schema.org/hasPart",
+    "Dataset": "https://schema.org/Dataset",
+    "dateModified": "https://schema.org/dateModified",
+    "abstract": "https://schema.org/abstract",
+    "sdDatePublished": "https://schema.org/sdDatePublished",
+    "domainIncludes": "https://schema.org/domainIncludes",
+    "datePublished": "https://schema.org/datePublished",
+    "license": "https://schema.org/license",
+    "additionalType": "https://schema.org/additionalType",
+    "name": "https://schema.org/name",
+    "publisher": "https://schema.org/publisher",
+    "conformsTo": "http://purl.org/dc/terms/conformsTo",
+    "Person": "https://schema.org/Person"
+  },
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name": "A test pub made of 3 ds",
+      "description": "3 ds",
+      "license": {
+        "@id": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "datePublished": "2023-01-01",
+      "hasPart": [
+        {
+          "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fmaxiv_ds2"
+        },
+        {
+          "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fsoleil_ds2"
+        },
+        {
+          "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fukri_ds5"
+        },
+        {
+          "@id": "https://doi.org/10.16907/d910159a-d48a-45fb-acf2-74b27cd5a8e5"
+        }
+      ]
+    },
+    {
+      "about": {
+        "@id": "./"
+      },
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.1"
+      },
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork"
+    },
+    {
+      "name": "Tests_Carto.tar",
+      "description": "",
+      "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fsoleil_ds2",
+      "@type": "Dataset"
+    },
+    {
+      "name": "files.zip",
+      "description": "",
+      "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fmaxiv_ds2",
+      "@type": "Dataset"
+    },
+    {
+      "name": "raw",
+      "description": "",
+      "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fukri_ds5",
+      "@type": "Dataset"
+    },
+    {
+      "identifier": "10.16907/d910159a-d48a-45fb-acf2-74b27cd5a8e5",
+      "creator": [
+        {
+          "@id": "f04f73c1-c916-4544-9b71-a79ce20bee2f"
+        },
+        {
+          "@id": "03f8187a-9397-4c92-bfda-01b02ca73930"
+        },
+        {
+          "@id": "9df3f9b3-893d-4636-9308-122ac4c10284"
+        }
+      ],
+      "publisher": {
+        "@id": "https://ror.org/03eh3y714"
+      },
+      "license": {
+        "@id": "https://creativecommons.org/licenses/by-sa/4.0/"
+      },
+      "datePublished": "2023",
+      "name": "A test pub made of 3 ds",
+      "abstract": "3 ds",
+      "additionalType": "raw",
+      "sdDatePublished": "2023-01-26T13:02:38.341Z",
+      "creativeWorkStatus": "REGISTERED",
+      "dateCreated": "2023-01-26T13:02:13.639Z",
+      "dateModified": "2023-01-26T13:02:13.643Z",
+      "description": "3 ds",
+      "hasPart": [
+        {
+          "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fsoleil_ds2"
+        },
+        {
+          "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fmaxiv_ds2"
+        },
+        {
+          "@id": "http://backend.scicat-development/datasets/PID.SAMPLE.PREFIX%2Fukri_ds5"
+        }
+      ],
+      "@id": "https://doi.org/10.16907/d910159a-d48a-45fb-acf2-74b27cd5a8e5",
+      "@type": "CreativeWork"
+    },
+    {
+      "name": "Paul Scherrer Institute",
+      "@id": "https://ror.org/03eh3y714",
+      "@type": "Organization"
+    },
+    {
+      "name": "Doru Constantin",
+      "@id": "f04f73c1-c916-4544-9b71-a79ce20bee2f",
+      "@type": "Person"
+    },
+    {
+      "identifier": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "name": "Creative Commons Attribution Share Alike 4.0 International",
+      "@id": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "@type": "CreativeWork"
+    },
+    {
+      "name": "Maik Kahnt",
+      "@id": "03f8187a-9397-4c92-bfda-01b02ca73930",
+      "@type": "Person"
+    },
+    {
+      "name": "Gabriel Bernardo",
+      "@id": "9df3f9b3-893d-4636-9308-122ac4c10284",
+      "@type": "Person"
+    }
+  ]
+}
