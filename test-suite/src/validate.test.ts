@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { API_KEY, BASE_URL } from './env';
-import { zipResource } from './utils';
+import { zipResource, zipResources } from './utils';
 
 describe('Validate endpoint', () => {
   const endpoint = `${BASE_URL}/validate`;
@@ -23,8 +23,9 @@ describe('Validate endpoint', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toMatch(/json/);
     const jsonResponse = await response.json();
+    console.log(jsonResponse);
     expect(jsonResponse.isValid).toBe(true);
-    expect(jsonResponse.errors || []).toHaveLength(0);
+    expect(jsonResponse.errors).toHaveLength(0);
     expect(jsonResponse.entities).toContain(
       'https://doi.org/10.16907/d910159a-d48a-45fb-acf2-74b27cd5a8e5'
     );
@@ -46,7 +47,7 @@ describe('Validate endpoint', () => {
     expect(response.headers.get('content-type')).toMatch(/json/);
     const jsonResponse = await response.json();
     expect(jsonResponse.isValid).toBe(true);
-    expect(jsonResponse.errors || []).toHaveLength(0);
+    expect(jsonResponse.errors).toHaveLength(0);
     expect(jsonResponse.entities).toContain(
       'https://doi.org/10.16907/d910159a-d48a-45fb-acf2-74b27cd5a8e5'
     );
@@ -113,6 +114,7 @@ describe('Validate endpoint', () => {
         'Content-Type': 'application/ld+json',
         'api-key': API_KEY,
       },
+      body: await zipResources(new Map()),
     });
 
     expect(response.status).toBe(400);
