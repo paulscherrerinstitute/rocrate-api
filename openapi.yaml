@@ -59,6 +59,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AsyncJob"
+        "400":
+          description: Issue with the crate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
         "401":
           description: Unauthorized
         "403":
@@ -191,6 +198,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AsyncJob"
+        "400":
+          description: Issue with the crate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Internal server error
 
@@ -230,6 +243,13 @@ paths:
               schema:
                 type: string
                 example: 655719dd-e400-43bb-9952-e25738cfffe7
+        "400":
+          description: Issue with the crate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
         "500":
           description: Internal server error
         "501":
@@ -568,6 +588,13 @@ components:
           type: string
       required:
         - jobId
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
 
     AsyncResult:
       properties:
