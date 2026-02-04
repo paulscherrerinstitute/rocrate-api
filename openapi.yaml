@@ -137,6 +137,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AsyncJob"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Invalid Export header:
+                  $ref: "#/components/examples/invalidExportHeader"
         "401":
           description: Unauthorized
         "403":
@@ -600,21 +609,24 @@ components:
       properties:
         status:
           enum:
-          - SCHEDULED
-          - RUNNING
-          - FAILED
-          - COMPLETED
+            - SCHEDULED
+            - RUNNING
+            - FAILED
+            - COMPLETED
           type: string
-        errors: 
+        errors:
           type: array
           items:
             type: string
         validationResult:
-          $ref: '#/components/schemas/ValidationReport'
-        importResult: 
-          $ref: '#/components/schemas/ImportResponse'
+          $ref: "#/components/schemas/ValidationReport"
+        importResult:
+          $ref: "#/components/schemas/ImportResponse"
 
   examples:
+    invalidExportHeader:
+      value:
+        message: "Missing or invalid 'export' header. Supported values are: 'application/ld+json' and 'application/zip'"
     validCrateResponse:
       value:
         isValid: true
