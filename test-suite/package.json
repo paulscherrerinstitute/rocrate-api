@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "test:openbis": "NODE_TLS_REJECT_UNAUTHORIZED=0 BASE_URL=https://openbis-sis-ci-sprint-public.ethz.ch/ro-crate-server jest",
-    "test:psi": "BASE_URL=https://scicat-exporter.development.psi.ch/api/v1/ro-crate jest",
+    "test:openbis": "NODE_TLS_REJECT_UNAUTHORIZED=0 TEST_ENV=OPENBIS jest",
+    "test:psi": "TEST_ENV=PSI jest",
+    "test:local": "TEST_ENV=LOCAL jest",
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@types/node": "^24.3.1",
+    "@zip.js/zip.js": "^2.8.10",
     "ts-node": "^10.9.2"
   }
 }
