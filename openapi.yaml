@@ -11,6 +11,8 @@ info:
 
 tags:
   - name: ro-crate
+security:
+  - ApiKeyAuth: []
 
 paths:
   /api/v1/ro-crate/import:
@@ -277,12 +279,6 @@ paths:
             type: string
           required: true
           description: Job ID from an async call, i.e. validate, export or import
-        - in: header
-          name: api-key
-          schema:
-            type: string
-          required: true
-          description: API key identifying the user
       responses:
         200:
           description: Content is ready for this job
@@ -311,12 +307,6 @@ paths:
             type: string
           required: true
           description: Job ID from an async call, i.e. validate, export or import
-        - in: header
-          name: api-key
-          schema:
-            type: string
-          required: true
-          description: API key identifying the user
       responses:
         200:
           description: Content is ready for this job
@@ -345,6 +335,11 @@ paths:
 
 # https://github.com/json-ld/json-ld.org/blob/main/schemas/jsonld-schema.json
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: api-key
   schemas:
     RoCrate:
       type: object
