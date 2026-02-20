@@ -271,27 +271,50 @@ paths:
       tags:
         - ro-crate
       description: |
-        Getting the status of an async call.
-      parameters:
-        - in: header
-          name: jobid
-          schema:
-            type: string
-          required: true
-          description: Job ID from an async call, i.e. validate, export or import
+        Getting the status of a single or all async calls.
       responses:
         200:
           description: Content is ready for this job
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/StatusResponse"
         400:
           description: Problems with arguments
         "401":
           description: Job is not accessible to user
         "403":
           description: Service is not accesible to user
+        "500":
+          description: Interal Server Error
+  /api/v1/ro-crate/status/{jobId}:
+    get:
+      tags:
+        - ro-crate
+      description: |
+        Getting the status of a user's async calls
+      parameters:
+        - in: path
+          name: jobid
+          schema:
+            type: string
+          required: true
+          description: Job ID from an async call, i.e. validate, export or import.  
+      responses:
+        200:
+          description: Content is ready for this job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AsyncResult"
+        400:
+          description: Problems with arguments
+        "401":
+          description: Job is not accessible to user
+        "403":
+          description: Service is not accesible to user
+        "404":
+          description: jobId not found
         "500":
           description: Interal Server Error
   /api/v1/ro-crate/download:
@@ -637,8 +660,16 @@ components:
       required:
         - message
 
+    StatusResponse:
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/AsyncResult" 
     AsyncResult:
       properties:
+        jobId:
+          type: string
         status:
           enum:
             - SCHEDULED
