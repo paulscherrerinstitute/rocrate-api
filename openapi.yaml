@@ -56,7 +56,7 @@ paths:
                 Valid:
                   $ref: "#/components/examples/importResponseExample"
         "202":
-          description: Contains information for polling /api/v1/ro-crate/status
+          description: Contains information for polling /api/v1/ro-crate/
           content:
             application/json:
               schema:
@@ -97,7 +97,7 @@ paths:
         When the 'Accept' header is 'application/zip', the data is also exported
         either in the produced zip file or as remote URLs referenced in the RO-Crate metadata descriptor.
 
-        The import may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
+        The import may be asynchronous, its  can be checked via /api/v1/ro-crate/import.
       parameters:
         - in: header
           name: Export
@@ -134,7 +134,7 @@ paths:
                 type: string
                 format: binary
         "202":
-          description: Contains information for polling /api/v1/ro-crate/status
+          description: Contains information for polling /api/v1/ro-crate/
           content:
             application/json:
               schema:
@@ -169,7 +169,7 @@ paths:
         - the schema bundled in the RO-Crate
         - a fixed list of schemas that the system can interpret
 
-        The validation may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
+        The validation may be asynchronous, its  can be checked via /api/v1/ro-crate/import.
 
 
         When the 'Content-Type' header is 'application/zip', the presence of the data in the zip archive is also checked.
@@ -204,7 +204,7 @@ paths:
                   $ref: "#/components/examples/emptyCrateExample"
 
         "202":
-          description: Contains information for polling /api/v1/ro-crate/status
+          description: Contains information for polling /api/v1/ro-crate/
           content:
             application/json:
               schema:
@@ -271,7 +271,7 @@ paths:
       tags:
         - ro-crate
       description: |
-        Getting the status of a single or all async calls.
+        Getting the status of async jobs created by the user.
       responses:
         200:
           description: Content is ready for this job
