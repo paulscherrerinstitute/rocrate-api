@@ -6,6 +6,5 @@
     "prettier/@typescript-eslint",
     "plugin:@typescript-eslint/recommended"
   ],
-  "rules": {
-  }
+  "rules": {}
 }
