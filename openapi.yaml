@@ -2,17 +2,37 @@
 openapi: 3.1.0
 info:
   title: RO-Crate API
-  version: 1.0.0
-  description: >
-    Open Research Data | Measure 2 | API 01<br><br>
-    Interoperability between Electronic Laboratory Notebooks and Data Repositories is implemented using [RO-Crate](https://www.researchobject.org/ro-crate/).<br>
-    RO-Crates consumed and produced by this API must comply with this [profile](https://sissource.ethz.ch/sispub/ro-crate/-/blob/main/interoperability/0.1.x/spec.md).<br><br>
+  version: 1.1.0
+  description: |
+    Open Research Data | Measure 2 | API 01
+
+    Interoperability between Electronic Laboratory Notebooks and Data Repositories is implemented using [RO-Crate](https://www.researchobject.org/ro-crate/).
+    RO-Crates consumed and produced by this API must comply with this [profile](https://sissource.ethz.ch/sispub/ro-crate/-/blob/main/interoperability/0.1.x/spec.md).
+    Implementations may make the content rules stricter: require additional properties, make recommended properties required, or accept only more specific types.
+
     ⚠️ The schemas provided do not reflect the exact structure of the RO-Crate. The JSON-LD document should be flattened.
+
+    **Optional parts.** Everything tagged `optional` may be absent from an implementation:
+    asynchronous processing (`202`, `/api/v1/ro-crate/status`, `/api/v1/ro-crate/status/{jobId}`, `/api/v1/ro-crate/download`),
+    `/api/v1/publication/validate`, the `text/plain` import body, `409` on import, and implementation-specific headers such as `ownerGroup`.
+    Servers that process requests synchronously never answer `202`.
+
+    **Invalid crates.** A crate that can be read but fails validation is answered with `422` and a `ValidationReport`.
+    Implementations MAY answer `400` with a `ValidationReport` instead; clients MUST handle both.
+
+    **Changes in 1.1.0**
+    - The `RoCrate` schema accepts valid crates (its `oneOf` matched the metadata descriptor and the root data entity twice).
+    - Publications are identified by `schema:Collection` (or a class declared equivalent to it); the title is `name`; `publisher`, `datePublished` and `license` are optional.
+    - Asynchronous processing, `/api/v1/publication/validate`, the `text/plain` import body and `409` are optional.
+    - `400` may carry a `ValidationReport`; `200` when an import creates nothing; optional `ownerGroup` header on import.
+    - `MissingDataError.type` and `.path` are optional; `PropertyError.nodeId` may be `null`.
+    - Authentication is required on import and on the asynchronous endpoints; `/export` and `/validate` may be public.
+    - Fixed: the `jobId` path parameter of `/api/v1/ro-crate/status/{jobId}`, descriptions and typos.
 
 tags:
   - name: ro-crate
-security:
-  - ApiKeyAuth: []
+  - name: optional
+    description: Parts an implementation may omit
 
 paths:
   /api/v1/ro-crate/import:
@@ -26,7 +46,18 @@ paths:
         to the system.
 
         When the 'Content-Type' header is 'application/zip', the data is also imported.
-        The import may be asynchronous, its status can be checked via /api/v1/ro-crate/import.
+        (optional) The import may be asynchronous; its status can then be checked via /api/v1/ro-crate/status/{jobId}.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: header
+          name: ownerGroup
+          required: false
+          schema:
+            type: string
+          description: |
+            (optional, implementation-specific) Group that will own the imported resources.
+            Used by the SciCat implementation; it defaults to the first access group of the user.
       requestBody:
         description: |
           The RO-Crate to import.
@@ -34,6 +65,7 @@ paths:
           Depending on the 'Content-Type' header, the payload can either be:
           - a [RO-Crate Metadata File Descriptor](https://www.researchobject.org/ro-crate/specification/1.1/root-data-entity.html#ro-crate-metadata-file-descriptor) for 'application/ld+json'
           - a zipped RO-Crate for 'application/zip'
+          - (optional) 'text/plain'
         content:
           application/ld+json:
             schema:
@@ -46,6 +78,12 @@ paths:
             schema:
               type: string
       responses:
+        "200":
+          description: The crate was processed, but nothing new was created (the map may be empty)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportResponse"
         "201":
           description: Map of the JSON-LD identifiers and associated system identifiers created
           content:
@@ -56,22 +94,31 @@ paths:
                 Valid:
                   $ref: "#/components/examples/importResponseExample"
         "202":
-          description: Contains information for polling /api/v1/ro-crate/
+          description: (optional) Contains information for polling /api/v1/ro-crate/status/{jobId}
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AsyncJob"
         "400":
-          description: Issue with the crate
+          description: |
+            The crate can't be read (`ErrorResponse`), or, for implementations that don't use `422`,
+            the crate fails validation (`ValidationReport`)
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/ValidationReport"
         "401":
           description: Unauthorized
         "403":
           description: Forbidden
+        "409":
+          description: (optional) The crate describes something that has already been imported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "422":
           description: Unacceptable content
           content:
@@ -97,7 +144,10 @@ paths:
         When the 'Accept' header is 'application/zip', the data is also exported
         either in the produced zip file or as remote URLs referenced in the RO-Crate metadata descriptor.
 
-        The import may be asynchronous, its  can be checked via /api/v1/ro-crate/import.
+        (optional) The export may be asynchronous; its result can then be downloaded via /api/v1/ro-crate/download.
+      security:
+        - {}
+        - ApiKeyAuth: []
       parameters:
         - in: header
           name: Export
@@ -110,7 +160,10 @@ paths:
           description: MIME type for the export
 
       requestBody:
-        description: List of Digital Object Identifiers [DOIs](https://www.doi.org) or system specific identifiers
+        description: |
+          List of Digital Object Identifiers [DOIs](https://www.doi.org) or system specific identifiers.
+          Implementations support DOIs, system specific identifiers, or both. An unsupported kind of identifier is answered with `400`,
+          an identifier that doesn't exist with `404`.
         content:
           application/json:
             schema:
@@ -134,13 +187,13 @@ paths:
                 type: string
                 format: binary
         "202":
-          description: Contains information for polling /api/v1/ro-crate/
+          description: (optional) Contains information for polling /api/v1/ro-crate/status/{jobId}
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AsyncJob"
         "400":
-          description: Bad request
+          description: Missing or invalid 'Export' header, or a kind of identifier the implementation doesn't support
           content:
             application/json:
               schema:
@@ -153,7 +206,7 @@ paths:
         "403":
           description: Forbidden
         "404":
-          description: Not found
+          description: An identifier that doesn't exist in the system
         "500":
           description: Internal server error
 
@@ -169,10 +222,12 @@ paths:
         - the schema bundled in the RO-Crate
         - a fixed list of schemas that the system can interpret
 
-        The validation may be asynchronous, its  can be checked via /api/v1/ro-crate/import.
-
+        (optional) The validation may be asynchronous; its status can then be checked via /api/v1/ro-crate/status/{jobId}.
 
         When the 'Content-Type' header is 'application/zip', the presence of the data in the zip archive is also checked.
+      security:
+        - {}
+        - ApiKeyAuth: []
       requestBody:
         description: |
           The RO-Crate to validate.
@@ -204,7 +259,7 @@ paths:
                   $ref: "#/components/examples/emptyCrateExample"
 
         "202":
-          description: Contains information for polling /api/v1/ro-crate/
+          description: (optional) Contains information for polling /api/v1/ro-crate/status/{jobId}
           content:
             application/json:
               schema:
@@ -222,6 +277,7 @@ paths:
     post:
       tags:
         - profiles
+        - optional
       requestBody:
         description: A single Publication in _unflattened_ form.
         content:
@@ -265,13 +321,17 @@ paths:
           description: Internal server error
         "501":
           description: Not implemented
-      summary: Validates a Publication object. The Publication should be flattened before including it in a RO-Crate. When the file is large enough, the server may reutrn an AsyncJob at its own discretion.
+      summary: Validates a Publication object. The Publication should be flattened before including it in a RO-Crate. When the file is large enough, the server may return an AsyncJob at its own discretion.
   /api/v1/ro-crate/status:
     get:
       tags:
         - ro-crate
+        - optional
+      security:
+        - ApiKeyAuth: []
       description: |
         Getting the status of async jobs created by the user.
+        Required only for implementations that answer `202`.
       responses:
         200:
           description: Content is ready for this job
@@ -284,18 +344,22 @@ paths:
         "401":
           description: Job is not accessible to user
         "403":
-          description: Service is not accesible to user
+          description: Service is not accessible to user
         "500":
-          description: Interal Server Error
+          description: Internal Server Error
   /api/v1/ro-crate/status/{jobId}:
     get:
       tags:
         - ro-crate
+        - optional
+      security:
+        - ApiKeyAuth: []
       description: |
-        Getting the status of a user's async calls
+        Getting the status of a user's async calls.
+        Required only for implementations that answer `202`.
       parameters:
         - in: path
-          name: jobid
+          name: jobId
           schema:
             type: string
           required: true
@@ -312,17 +376,21 @@ paths:
         "401":
           description: Job is not accessible to user
         "403":
-          description: Service is not accesible to user
+          description: Service is not accessible to user
         "404":
           description: jobId not found
         "500":
-          description: Interal Server Error
+          description: Internal Server Error
   /api/v1/ro-crate/download:
     get:
       tags:
         - ro-crate
+        - optional
+      security:
+        - ApiKeyAuth: []
       description: |
         Getting the result of an async export call.
+        Required only for implementations that answer `202` on export.
       parameters:
         - in: header
           name: jobid
@@ -352,9 +420,9 @@ paths:
         "401":
           description: Job is not accessible to user
         "403":
-          description: Service is not accesible to user
+          description: Service is not accessible to user
         "500":
-          description: Interal Server Error
+          description: Internal Server Error
 
 # https://github.com/json-ld/json-ld.org/blob/main/schemas/jsonld-schema.json
 components:
@@ -376,11 +444,13 @@ components:
         "@graph":
           type: array
           minItems: 2
+          description: |
+            The flattened entities of the crate. It contains the metadata descriptor (`RoCrateMetadata`),
+            the root data entity it is `about` (`RootDataset`), and any other entities.
           items:
-            oneOf:
-              - $ref: "#/components/schemas/RoCrateMetadata"
-              - $ref: "#/components/schemas/RootDataset"
-              - $ref: "#/components/schemas/JsonLDEntity"
+            $ref: "#/components/schemas/JsonLDEntity"
+          contains:
+            $ref: "#/components/schemas/RoCrateMetadata"
 
     RoCrateMetadata:
       type: object
@@ -465,18 +535,20 @@ components:
       properties:
         "@type":
           type: string
-          const: "CreativeWork"
+          const: "Collection"
+          description: "`schema:Collection`, or a class declared equivalent to it (`owl:equivalentClass`)"
         "@id":
           type: string
-        identifer:
+        identifier:
           type: string
-        title:
+        name:
           type: string
+          description: The title of the publication
         publisher:
           $ref: "#/components/schemas/Organization"
         datePublished:
           type: string
-          format: date-time
+          description: An ISO 8601 date, or a year
         creator:
           type: array
           items:
@@ -494,12 +566,9 @@ components:
         - "@id"
         - "@type"
         - identifier
-        - title
-        - publisher
-        - datePublished
+        - name
         - creator
         - description
-        - license
 
     Person:
       type: object
@@ -547,7 +616,9 @@ components:
       additionalProperties: true
       properties:
         "@type":
-          type: string
+          type:
+            - string
+            - array
         "@id":
           type: string
       required:
@@ -618,16 +689,18 @@ components:
           const: "MissingDataError"
         "type":
           type: string
-          description: Type of the missing data in RO-Crate vocabulary
+          description: |
+            (optional) Type of the missing data in RO-Crate vocabulary.
+            Implementations that identify the error kind by `type` send `MissingDataError` here.
           enum:
             - File
             - Dataset
+            - MissingDataError
         path:
-          description: Path of the missing data inside the zip archive
+          description: (optional) Path of the missing data inside the zip archive
           type: string
-      required:
-        - type
-        - path
+        message:
+          type: string
 
     PropertyError:
       type: object
@@ -636,7 +709,10 @@ components:
           type: string
           const: "PropertyError"
         nodeId:
-          type: string
+          description: "`@id` of the entity; `null` for entities without an `@id`"
+          type:
+            - string
+            - "null"
         property:
           type: string
         message:
