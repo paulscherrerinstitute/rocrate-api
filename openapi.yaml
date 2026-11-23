@@ -7,7 +7,7 @@ info:
     Open Research Data | Measure 2 | API 01
 
     Interoperability between Electronic Laboratory Notebooks and Data Repositories is implemented using [RO-Crate](https://www.researchobject.org/ro-crate/).
-    RO-Crates consumed and produced by this API must comply with this [profile](https://sissource.ethz.ch/sispub/ro-crate/-/blob/main/interoperability/0.1.x/spec.md).
+    RO-Crates consumed and produced by this API must comply with this [profile](https://sissource.ethz.ch/sispub/ro-crate/-/blob/main/interoperability/0.2.x/spec.md).
     Implementations may make the content rules stricter: require additional properties, make recommended properties required, or accept only more specific types.
 
     ⚠️ The schemas provided do not reflect the exact structure of the RO-Crate. The JSON-LD document should be flattened.
